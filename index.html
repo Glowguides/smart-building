@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Building Platform · AI-Powered Energy Intelligence</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    /* ── NAV ── */
+    .landing-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.3rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(3,7,18,.7), transparent);
+    }
+    .nav-logo { display:flex;align-items:center;gap:.75rem;text-decoration:none; }
+    .nav-logo-icon {
+      width:34px;height:34px;border-radius:10px;
+      background:linear-gradient(135deg,var(--indigo),var(--cyan));
+      display:flex;align-items:center;justify-content:center;
+    }
+    .nav-logo-text { font-weight:800;font-size:1.05rem; }
+    .nav-logo-text span { background:linear-gradient(135deg,var(--indigo),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .nav-links { display:flex;gap:2rem;list-style:none; }
+    .nav-links a { color:rgba(255,255,255,.75);font-size:.875rem;text-decoration:none;transition:color .2s;font-weight:500; }
+    .nav-links a:hover { color:#fff; }
+    @media(max-width:640px){ .nav-links{display:none;} }
+
+    /* ── EARTH SCENE HERO ── */
+    .earth-scene {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #000308;
+    }
+
+    /* Full-viewport WebGL canvas — THE EARTH */
+    #earth-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #earth-canvas:active { cursor: grabbing; }
+
+    /* Cinematic vignette over the scene */
+    .earth-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 110%, rgba(3,7,18,.95) 0%, transparent 55%),
+        radial-gradient(ellipse at 0% 50%,   rgba(3,7,18,.5)  0%, transparent 45%),
+        radial-gradient(ellipse at 100% 50%, rgba(3,7,18,.5)  0%, transparent 45%),
+        linear-gradient(to bottom, rgba(3,7,18,.35) 0%, transparent 30%, transparent 60%, rgba(3,7,18,.9) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Content floats over the scene */
+    .earth-content {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 6rem;
+      text-align: center;
+    }
+
+    .earth-chip {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.15);
+      backdrop-filter: blur(12px);
+      color: rgba(255,255,255,.85);
+      border-radius: 99px; padding: .38rem 1rem;
+      font-size: .72rem; font-weight: 600; letter-spacing: .07em;
+      text-transform: uppercase; margin-bottom: 1.25rem;
+    }
+    .earth-chip-dot { width:6px;height:6px;border-radius:50%;background:#10b981;animation:blink 1.5s infinite; }
+
+    .earth-title {
+      font-size: clamp(2.8rem, 6vw, 6rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -.04em;
+      margin-bottom: 1.1rem;
+      text-shadow: 0 2px 40px rgba(0,0,0,.8);
+    }
+
+    .earth-subtitle {
+      font-size: clamp(.95rem, 1.5vw, 1.15rem);
+      color: rgba(255,255,255,.65);
+      max-width: 520px;
+      margin: 0 auto 2.25rem;
+      line-height: 1.75;
+      text-shadow: 0 1px 10px rgba(0,0,0,.9);
+    }
+
+    .earth-btns {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .earth-stats {
+      display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+    }
+    .earth-stat {
+      text-align: center;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      backdrop-filter: blur(16px);
+      border-radius: 14px;
+      padding: .7rem 1.4rem;
+    }
+    .earth-stat-val { font-size: 1.4rem; font-weight: 900; }
+    .earth-stat-lbl { font-size: .68rem; color: rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.08em; margin-top:.2rem; }
+
+    /* Scroll indicator */
+    .earth-scroll {
+      position: absolute; bottom: 1.75rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 3; color: rgba(255,255,255,.35);
+      font-size: .68rem; letter-spacing:.12em; text-transform:uppercase;
+      display:flex;flex-direction:column;align-items:center;gap:.4rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    .earth-scroll svg { opacity:.5; }
+
+    /* ── BELOW HERO ── */
+    .stats-row {
+      display:flex;justify-content:center;gap:4rem;flex-wrap:wrap;
+      padding:4rem 2rem;
+      border-top:1px solid rgba(148,163,184,.06);
+      border-bottom:1px solid rgba(148,163,184,.06);
+    }
+    .stat-item { text-align:center; }
+    .stat-num { font-size:2.6rem;font-weight:900;letter-spacing:-.04em; }
+    .stat-label { font-size:.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.3rem; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="landing-nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <div class="nav-logo-text">Smart<span>Building</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="thermal.html">Thermal</a></li>
+    <li><a href="solar.html">Solar</a></li>
+    <li><a href="advisor.html">Advisor</a></li>
+    <li><a href="report.html">Report</a></li>
+  </ul>
+  <a href="dashboard.html" class="btn btn-primary" style="padding:.55rem 1.3rem;font-size:.85rem">Launch App</a>
+</nav>
+
+<!-- ════ EARTH SCENE ════ -->
+<section class="earth-scene">
+
+  <!-- Three.js renders the full Earth scene here -->
+  <canvas id="earth-canvas"></canvas>
+
+  <!-- Cinematic darkening at edges/bottom -->
+  <div class="earth-vignette"></div>
+
+  <!-- UI overlay at the bottom -->
+  <div class="earth-content">
+    <div class="earth-chip hero-anim">
+      <span class="earth-chip-dot"></span>
+      Live Energy Intelligence
+    </div>
+
+    <h1 class="earth-title hero-anim">
+      <span class="gradient-text">Smart Building</span><br>Energy Platform
+    </h1>
+
+    <p class="earth-subtitle hero-anim">
+      Real-time sensor dashboards · Thermal analysis · Solar ROI<br>
+      Location-based energy intelligence — all client-side
+    </p>
+
+    <div class="earth-btns hero-anim">
+      <a href="dashboard.html" class="btn btn-primary" style="padding:.9rem 2.2rem;font-size:1rem">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Open Dashboard
+      </a>
+      <a href="advisor.html" class="btn btn-outline" style="padding:.9rem 2.2rem;font-size:1rem;border-color:rgba(255,255,255,.2);color:#fff">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Building Advisor
+      </a>
+    </div>
+
+    <div class="earth-stats hero-anim">
+      <div class="earth-stat">
+        <div class="earth-stat-val gradient-text">35%</div>
+        <div class="earth-stat-lbl">Energy Saved</div>
+      </div>
+      <div class="earth-stat">
+        <div class="earth-stat-val" style="color:#fcd34d">4 t</div>
+        <div class="earth-stat-lbl">CO₂ / Year</div>
+      </div>
+      <div class="earth-stat">
+        <div class="earth-stat-val" style="color:#6ee7b7">401%</div>
+        <div class="earth-stat-lbl">Solar ROI</div>
+      </div>
+      <div class="earth-stat">
+        <div class="earth-stat-val" style="color:#c084fc">6</div>
+        <div class="earth-stat-lbl">Tools</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="earth-scroll">
+    <span>Scroll</span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+
+</section>
+
+<!-- STATS -->
+<section class="stats-row">
+  <div class="stat-item reveal">
+    <div class="stat-num gradient-text" data-count="6" data-suffix="+">0+</div>
+    <div class="stat-label">Engineering Tools</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" style="background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent" data-count="35" data-suffix="%">0%</div>
+    <div class="stat-label">Avg Energy Reduction</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" style="background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent" data-count="4" data-suffix="t">0t</div>
+    <div class="stat-label">CO₂ Saved / Year</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" style="background:linear-gradient(135deg,#a855f7,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent" data-count="401" data-suffix="%">0%</div>
+    <div class="stat-label">Max Solar ROI</div>
+  </div>
+</section>
+
+<!-- COVERFLOW CAROUSEL -->
+<section class="coverflow-section">
+  <p class="hero-chip reveal" style="justify-content:center;margin-bottom:1rem">
+    <span class="hero-chip-dot"></span>Choose your tool
+  </p>
+  <h2 class="cf-title reveal">Pick a Module</h2>
+  <p class="cf-subtitle reveal">Spin through the tools — click the front card to launch</p>
+
+  <div class="coverflow-wrap">
+    <div class="cf-track" id="cf-track">
+      <div class="cf-card" data-href="dashboard.html">
+        <div class="cf-card-icon" style="background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(99,102,241,.05));border:1px solid rgba(99,102,241,.2)">📊</div>
+        <div class="cf-card-title">Dashboard</div>
+        <div class="cf-card-desc">Live sensor data, KPIs, energy charts across 5 building zones</div>
+        <div class="cf-card-arrow">Open <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+      <div class="cf-card" data-href="thermal.html">
+        <div class="cf-card-icon" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.05));border:1px solid rgba(245,158,11,.2)">🌡️</div>
+        <div class="cf-card-title">Thermal Load</div>
+        <div class="cf-card-desc">ISO 13790 heat loss calculator with efficiency grade & breakdown chart</div>
+        <div class="cf-card-arrow">Open <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+      <div class="cf-card" data-href="solar.html">
+        <div class="cf-card-icon" style="background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.05));border:1px solid rgba(16,185,129,.2)">☀️</div>
+        <div class="cf-card-title">Solar ROI</div>
+        <div class="cf-card-desc">PV production estimate, payback period & 20-year net value projection</div>
+        <div class="cf-card-arrow">Open <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+      <div class="cf-card" data-href="advisor.html">
+        <div class="cf-card-icon" style="background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(6,182,212,.05));border:1px solid rgba(6,182,212,.2)">🌍</div>
+        <div class="cf-card-title">Building Advisor</div>
+        <div class="cf-card-desc">Location-based energy ranking, panel orientation & climate analysis</div>
+        <div class="cf-card-arrow">Open <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+      <div class="cf-card" data-href="report.html">
+        <div class="cf-card-icon" style="background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(168,85,247,.05));border:1px solid rgba(168,85,247,.2)">📄</div>
+        <div class="cf-card-title">Energy Report</div>
+        <div class="cf-card-desc">Full engineering report with PDF export — no server, instant generation</div>
+        <div class="cf-card-arrow">Open <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cf-arrows">
+    <button class="cf-arrow" id="cf-prev">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="cf-arrow" id="cf-next">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+  <div class="cf-dots" id="cf-dots"></div>
+</section>
+
+<!-- THREE.JS -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
+<script src="js/main.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   EARTH SCENE — realistic spinning globe filling the viewport
+   Camera close-up, large sphere, cinematic lighting
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  const canvas = document.getElementById('earth-canvas');
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = false;
+  renderer.setClearColor(0x000308, 1);
+
+  const scene  = new THREE.Scene();
+
+  /* Wide FOV so the globe feels HUGE and immersive */
+  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 200);
+  camera.position.set(0, 0.3, 1.72); /* close to the sphere, slightly above equator */
+
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* ── Starfield ── */
+  const sv = [];
+  for (let i = 0; i < 4000; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi   = Math.acos(2 * Math.random() - 1);
+    const r     = 80 + Math.random() * 40;
+    sv.push(r*Math.sin(phi)*Math.cos(theta), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(theta));
+  }
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(sv, 3));
+  scene.add(new THREE.Points(starGeo,
+    new THREE.PointsMaterial({ color: 0xffffff, size: 0.22, sizeAttenuation: true, transparent: true, opacity: 0.85 })
+  ));
+
+  /* ── Earth ── */
+  const earthGeo = new THREE.SphereGeometry(1, 96, 96);
+  const earthMat = new THREE.MeshPhongMaterial({
+    color:     0x1a4a8a,
+    emissive:  0x0a1422,
+    specular:  new THREE.Color(0x224488),
+    shininess: 22,
+  });
+  const earth = new THREE.Mesh(earthGeo, earthMat);
+  scene.add(earth);
+
+  /* Load real NASA Blue Marble texture */
+  const loader = new THREE.TextureLoader();
+  loader.crossOrigin = 'anonymous';
+
+  loader.load(
+    'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+    tex => {
+      earthMat.map = tex;
+      earthMat.color.set(0xffffff);
+      earthMat.needsUpdate = true;
+    },
+    undefined,
+    () => { /* fallback: keep procedural blue */ }
+  );
+
+  /* Cloud layer */
+  const cloudMat = new THREE.MeshPhongMaterial({ transparent: true, opacity: 0.32, depthWrite: false });
+  const clouds = new THREE.Mesh(new THREE.SphereGeometry(1.008, 64, 64), cloudMat);
+  scene.add(clouds);
+  loader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png',
+    t => { cloudMat.map = t; cloudMat.needsUpdate = true; }, undefined, () => {});
+
+  /* Atmosphere glow (thin rim of blue) */
+  const atmMat = new THREE.MeshPhongMaterial({
+    color: 0x4fc3f7, side: THREE.FrontSide,
+    transparent: true, opacity: 0.10, depthWrite: false,
+  });
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.022, 64, 64), atmMat));
+
+  /* Outer atmosphere halo (BackSide — seen from outside) */
+  scene.add(new THREE.Mesh(
+    new THREE.SphereGeometry(1.06, 64, 64),
+    new THREE.MeshBasicMaterial({ color: 0x1a6fa8, side: THREE.BackSide, transparent: true, opacity: 0.06 })
+  ));
+
+  /* ── Lighting — sunlight from the right/above ── */
+  scene.add(new THREE.AmbientLight(0x223355, 0.6));
+
+  const sunLight = new THREE.DirectionalLight(0xfff5e0, 2.2);
+  sunLight.position.set(6, 2, 4);
+  scene.add(sunLight);
+
+  /* Subtle blue rim from opposite side (Earth-shine) */
+  const rimLight = new THREE.DirectionalLight(0x4488cc, 0.35);
+  rimLight.position.set(-5, -1, -3);
+  scene.add(rimLight);
+
+  /* ── Drag rotation ── */
+  let drag = false, prev = { x: 0, y: 0 }, vel = { x: 0, y: 0.0025 };
+
+  canvas.addEventListener('mousedown',  e => { drag = true; prev = { x: e.clientX, y: e.clientY }; });
+  canvas.addEventListener('touchstart', e => { drag = true; prev = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+  window.addEventListener('mouseup',    () => drag = false);
+  window.addEventListener('touchend',   () => drag = false);
+  canvas.addEventListener('mousemove',  e => {
+    if (!drag) return;
+    vel.y = (e.clientX - prev.x) * 0.005;
+    vel.x = (e.clientY - prev.y) * 0.004;
+    prev = { x: e.clientX, y: e.clientY };
+  });
+  canvas.addEventListener('touchmove', e => {
+    if (!drag) return;
+    vel.y = (e.touches[0].clientX - prev.x) * 0.005;
+    vel.x = (e.touches[0].clientY - prev.y) * 0.004;
+    prev = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, { passive: true });
+
+  /* ── Render loop ── */
+  (function loop() {
+    requestAnimationFrame(loop);
+    if (!drag) {
+      vel.y += (0.0025 - vel.y) * 0.02;   /* smooth back to auto-spin */
+      vel.x += (0      - vel.x) * 0.06;
+    }
+    earth.rotation.y  += vel.y;
+    earth.rotation.x  += vel.x;
+    clouds.rotation.y += vel.y * 0.65;
+    /* clamp tilt */
+    earth.rotation.x = Math.max(-0.45, Math.min(0.45, earth.rotation.x));
+    renderer.render(scene, camera);
+  })();
+})();
+
+/* ══════════════════════════════════════════════════════════════════════════
+   3D COVERFLOW CAROUSEL
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  const cards  = [...document.querySelectorAll('.cf-card')];
+  const dotsEl = document.getElementById('cf-dots');
+  let active = 2, autoTimer;
+
+  cards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'cf-dot';
+    d.addEventListener('click', () => { active = i; layout(); resetAuto(); });
+    dotsEl.appendChild(d);
+  });
+
+  function layout() {
+    const n = cards.length;
+    dotsEl.querySelectorAll('.cf-dot').forEach((d, i) => d.classList.toggle('active', i === active));
+    cards.forEach((card, i) => {
+      let off = i - active;
+      if (off >  n / 2) off -= n;
+      if (off < -n / 2) off += n;
+      const abs  = Math.abs(off);
+      const sign = off >= 0 ? 1 : -1;
+      const cap  = Math.min(abs, 2);
+      card.style.transform     = `translateX(${sign * cap * 258}px) translateZ(${-abs * 115}px) rotateY(${sign * cap * 44}deg) scale(${abs === 0 ? 1.07 : Math.max(0.62, 1 - abs * 0.15)})`;
+      card.style.opacity       = abs > 2 ? 0 : 1 - abs * 0.28;
+      card.style.zIndex        = 20 - abs;
+      card.style.pointerEvents = abs <= 1 ? 'auto' : 'none';
+      card.classList.toggle('active', abs === 0);
+    });
+  }
+
+  const next = () => { active = (active + 1) % cards.length; layout(); };
+  const prev = () => { active = (active - 1 + cards.length) % cards.length; layout(); };
+
+  function resetAuto() { clearInterval(autoTimer); autoTimer = setInterval(next, 3800); }
+
+  layout();
+  resetAuto();
+
+  document.getElementById('cf-next').addEventListener('click', () => { next(); resetAuto(); });
+  document.getElementById('cf-prev').addEventListener('click', () => { prev(); resetAuto(); });
+
+  cards.forEach((card, i) => {
+    card.addEventListener('click', () => {
+      let off = i - active;
+      const n = cards.length;
+      if (off >  n / 2) off -= n;
+      if (off < -n / 2) off += n;
+      if (Math.abs(off) === 0) {
+        document.body.classList.add('page-exit');
+        setTimeout(() => window.location.href = card.dataset.href, 350);
+      } else { active = i; layout(); resetAuto(); }
+    });
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { next(); resetAuto(); }
+    if (e.key === 'ArrowLeft')  { prev(); resetAuto(); }
+    if (e.key === 'Enter') {
+      const ac = cards.find(c => c.classList.contains('active'));
+      if (ac) { document.body.classList.add('page-exit'); setTimeout(() => window.location.href = ac.dataset.href, 350); }
+    }
+  });
+})();
+</script>
+</body>
+</html>

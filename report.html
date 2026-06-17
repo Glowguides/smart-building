@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Energy Report · Smart Building</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .report-form-card { max-width: 800px; }
+    .toggle-section { background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:12px;padding:1.25rem;margin-bottom:.75rem; }
+    .toggle-header { display:flex;align-items:center;gap:.75rem;cursor:pointer;margin-bottom:0; }
+    .toggle-header input[type="checkbox"] { width:17px;height:17px;accent-color:var(--indigo);cursor:pointer; }
+    .toggle-header span { font-weight:700;font-size:.95rem; }
+    .toggle-fields { margin-top:1.1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.7rem; }
+    .mini-chip { background:rgba(15,23,42,.8);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem; }
+    .mini-chip-label { font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem; }
+    .mini-chip-value { font-size:1.05rem;font-weight:800; }
+    .report-section { background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem; }
+    .report-section h3 { display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;font-size:.95rem; }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="sidebar-logo-text">Smart<span>Building</span></div>
+    </div>
+    <div class="sidebar-section-label">Navigation</div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="thermal.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>Thermal Calculator</a>
+      <a href="solar.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Solar ROI</a>
+      <a href="advisor.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Building Advisor</a>
+      <a href="report.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Energy Report</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-inner">
+        <div class="sidebar-avatar">SB</div>
+        <div><div class="sidebar-user-name">Portfolio Project</div><div class="sidebar-user-role">Energy Analytics</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="topbar-btn menu-btn" id="menu-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <span class="topbar-title">📄 Energy Report Generator</span>
+    </header>
+
+    <main class="page-content">
+      <div class="page-banner">
+        <canvas id="page-banner-canvas" data-type="report"></canvas>
+        <div class="page-banner-vignette"></div>
+        <div class="page-banner-content">
+          <div class="page-banner-icon" style="color:#a855f7">📄</div>
+          <div class="page-banner-title">Energy Report Generator</div>
+          <div class="page-banner-desc">Animated data streams · Instant PDF export · Client-side only</div>
+        </div>
+      </div>
+      <p class="page-subtitle">Fill in the parameters below to generate a structured engineering report with recommendations. Export as PDF — client-side, instant, no server needed.</p>
+
+      <form id="report-form" class="report-form-card">
+
+        <!-- Building name -->
+        <div class="card reveal" style="margin-bottom:.9rem">
+          <div class="form-group" style="margin:0;max-width:380px">
+            <label>Building Name</label>
+            <input id="r-name" type="text" value="My Building" placeholder="e.g. Tower Block A" />
+          </div>
+        </div>
+
+        <!-- Thermal toggle -->
+        <div class="toggle-section reveal" style="transition-delay:.05s">
+          <label class="toggle-header">
+            <input type="checkbox" id="r-inc-thermal" checked />
+            <span>🌡️ Include Thermal Analysis</span>
+          </label>
+          <div id="thermal-fields" class="toggle-fields">
+            <div class="form-group"><label>Length (m)</label><input id="r-length" type="number" step="0.1" value="10" /></div>
+            <div class="form-group"><label>Width (m)</label><input id="r-width" type="number" step="0.1" value="8" /></div>
+            <div class="form-group"><label>Height (m)</label><input id="r-height" type="number" step="0.1" value="3" /></div>
+            <div class="form-group"><label>Insulation (cm)</label><input id="r-insulation" type="number" step="1" value="5" /></div>
+            <div class="form-group"><label>Window Area (m²)</label><input id="r-window" type="number" step="0.5" value="12" /></div>
+            <div class="form-group"><label>Indoor Temp (°C)</label><input id="r-indoor" type="number" step="0.5" value="22" /></div>
+            <div class="form-group"><label>Outdoor Temp (°C)</label><input id="r-outdoor" type="number" step="0.5" value="35" /></div>
+            <div class="form-group"><label>Wall Material</label>
+              <select id="r-material">
+                <option value="concrete">Concrete</option>
+                <option value="brick">Brick</option>
+                <option value="wood">Wood</option>
+                <option value="steel">Steel</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Solar toggle -->
+        <div class="toggle-section reveal" style="transition-delay:.1s;margin-bottom:1.25rem">
+          <label class="toggle-header">
+            <input type="checkbox" id="r-inc-solar" checked />
+            <span>☀️ Include Solar Analysis</span>
+          </label>
+          <div id="solar-fields" class="toggle-fields">
+            <div class="form-group"><label>City</label>
+              <select id="r-location">
+                <option value="Casablanca">Casablanca</option>
+                <option value="Rabat">Rabat</option>
+                <option value="Marrakech">Marrakech</option>
+                <option value="Agadir">Agadir</option>
+                <option value="Fes">Fes</option>
+                <option value="Paris">Paris</option>
+                <option value="Madrid">Madrid</option>
+                <option value="Dubai">Dubai</option>
+                <option value="Cairo">Cairo</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Price (MAD/kWh)</label><input id="r-price" type="number" step="0.01" value="1.20" /></div>
+            <div class="form-group"><label>Roof Area (m²)</label><input id="r-roof" type="number" step="1" value="50" /></div>
+            <div class="form-group"><label>Panel Efficiency</label><input id="r-efficiency" type="number" step="0.01" value="0.20" /></div>
+            <div class="form-group"><label>System Cost (MAD)</label><input id="r-cost" type="number" step="1000" value="80000" /></div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary reveal" style="width:100%;justify-content:center;padding:1rem;font-size:1rem;transition-delay:.15s">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Generate Energy Report
+        </button>
+      </form>
+
+      <!-- ══ REPORT OUTPUT ══ -->
+      <div id="report-output" class="report-output" style="max-width:800px;margin-top:2.5rem">
+
+        <!-- Dark header -->
+        <div class="report-dark-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+          <div>
+            <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#6366f1;font-weight:700;margin-bottom:.3rem">Energy Analysis Report</div>
+            <div style="font-size:1.3rem;font-weight:900" id="rpt-building">—</div>
+            <div style="font-size:.82rem;color:#64748b;margin-top:.2rem" id="rpt-date">—</div>
+          </div>
+          <button id="btn-pdf" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export PDF
+          </button>
+        </div>
+
+        <!-- Summary -->
+        <div class="report-section">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Executive Summary</h3>
+          <p id="rpt-summary" style="color:var(--text-muted);font-size:.88rem;line-height:1.8"></p>
+        </div>
+
+        <!-- Thermal results -->
+        <div id="thermal-summary" style="display:none">
+          <div class="report-section">
+            <h3 style="margin-bottom:.85rem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              Thermal Results
+            </h3>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem">
+              <div class="mini-chip"><div class="mini-chip-label">Grade</div><div class="mini-chip-value gradient-text" id="rs-grade" style="font-size:1.6rem">—</div></div>
+              <div class="mini-chip"><div class="mini-chip-label">Total Loss</div><div class="mini-chip-value" id="rs-loss">—</div></div>
+              <div class="mini-chip"><div class="mini-chip-label">Heating</div><div class="mini-chip-value" id="rs-heating">—</div></div>
+              <div class="mini-chip"><div class="mini-chip-label">Cooling</div><div class="mini-chip-value" id="rs-cooling">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Solar results -->
+        <div id="solar-summary" style="display:none">
+          <div class="report-section">
+            <h3 style="margin-bottom:.85rem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+              Solar Results
+            </h3>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem">
+              <div class="mini-chip"><div class="mini-chip-label">Production</div><div class="mini-chip-value" id="rs-energy" style="font-size:.92rem">—</div></div>
+              <div class="mini-chip"><div class="mini-chip-label">Savings/yr</div><div class="mini-chip-value" id="rs-savings" style="font-size:.92rem">—</div></div>
+              <div class="mini-chip"><div class="mini-chip-label">Payback</div><div class="mini-chip-value" id="rs-payback">—</div></div>
+              <div class="mini-chip"><div class="mini-chip-label">CO₂ Saved</div><div class="mini-chip-value" id="rs-co2" style="font-size:.9rem">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inefficiencies -->
+        <div class="report-section" style="border-color:rgba(244,63,94,.2)">
+          <h3 style="color:#fda4af">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Identified Inefficiencies
+          </h3>
+          <ul class="report-section-list" id="rpt-ineff"></ul>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="report-section" style="border-color:rgba(16,185,129,.2)">
+          <h3 style="color:#6ee7b7">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Recommendations
+          </h3>
+          <ul class="report-section-list" id="rpt-recs"></ul>
+        </div>
+
+        <!-- Cost saving -->
+        <div class="report-section" style="border-color:rgba(245,158,11,.2)">
+          <h3 style="color:#fcd34d">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Cost-Saving Ideas
+          </h3>
+          <ul class="report-section-list" id="rpt-saving"></ul>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/banners.js"></script>
+<script src="js/report.js"></script>
+</body>
+</html>

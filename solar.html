@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solar ROI · Smart Building</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+    @media(max-width:960px){ .two-col{ grid-template-columns:1fr; } }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1rem; }
+    .result-chip { background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;transition:border-color .2s; }
+    .result-chip:hover { border-color:var(--border-glow); }
+    .result-chip-label { font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem; }
+    .result-chip-value { font-size:1.2rem;font-weight:800;line-height:1; }
+    .formula-box { background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:1.1rem 1.25rem;margin-top:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-muted);line-height:2; }
+    .formula-box strong { color:#6ee7b7; }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="sidebar-logo-text">Smart<span>Building</span></div>
+    </div>
+    <div class="sidebar-section-label">Navigation</div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="thermal.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>Thermal Calculator</a>
+      <a href="solar.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Solar ROI</a>
+      <a href="advisor.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Building Advisor</a>
+      <a href="report.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Energy Report</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-inner">
+        <div class="sidebar-avatar">SB</div>
+        <div><div class="sidebar-user-name">Portfolio Project</div><div class="sidebar-user-role">Energy Analytics</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="topbar-btn menu-btn" id="menu-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <span class="topbar-title">☀️ Solar ROI Calculator</span>
+    </header>
+
+    <main class="page-content">
+      <div class="page-banner">
+        <canvas id="page-banner-canvas" data-type="solar"></canvas>
+        <div class="page-banner-vignette"></div>
+        <div class="page-banner-content">
+          <div class="page-banner-icon" style="color:#fcd34d">☀️</div>
+          <div class="page-banner-title">Solar ROI Calculator</div>
+          <div class="page-banner-desc">Photon simulation · Irradiance data · 20-year projection</div>
+        </div>
+      </div>
+      <p class="page-subtitle">Estimate PV system production, annual savings and return on investment using real solar irradiance data for 15+ cities.</p>
+
+      <div class="two-col">
+
+        <!-- FORM -->
+        <div class="card reveal">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(16,185,129,.15);display:flex;align-items:center;justify-content:center">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </div>
+            <h3 style="font-size:1rem">System Parameters</h3>
+          </div>
+
+          <form id="solar-form">
+            <div class="form-group">
+              <label>City / Location</label>
+              <select id="s-location">
+                <option value="Casablanca">🇲🇦 Casablanca — 5.2 kWh/m²/day</option>
+                <option value="Rabat">🇲🇦 Rabat — 5.1 kWh/m²/day</option>
+                <option value="Marrakech">🇲🇦 Marrakech — 5.8 kWh/m²/day</option>
+                <option value="Agadir">🇲🇦 Agadir — 6.0 kWh/m²/day</option>
+                <option value="Fes">🇲🇦 Fes — 5.3 kWh/m²/day</option>
+                <option value="Meknes">🇲🇦 Meknes — 5.3 kWh/m²/day</option>
+                <option value="Oujda">🇲🇦 Oujda — 5.5 kWh/m²/day</option>
+                <option value="Tangier">🇲🇦 Tangier — 4.8 kWh/m²/day</option>
+                <option value="Kenitra">🇲🇦 Kenitra — 5.0 kWh/m²/day</option>
+                <option value="Paris">🇫🇷 Paris — 3.0 kWh/m²/day</option>
+                <option value="Madrid">🇪🇸 Madrid — 4.7 kWh/m²/day</option>
+                <option value="Dubai">🇦🇪 Dubai — 5.9 kWh/m²/day</option>
+                <option value="Cairo">🇪🇬 Cairo — 5.7 kWh/m²/day</option>
+              </select>
+            </div>
+            <div class="grid-2">
+              <div class="form-group"><label>Electricity Price (MAD/kWh)</label><input id="s-price" type="number" step="0.01" min="0.1" value="1.20" /></div>
+              <div class="form-group"><label>Roof Area (m²)</label><input id="s-area" type="number" step="1" min="5" value="50" /></div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Panel Efficiency (0 – 1)</label>
+                <input id="s-efficiency" type="number" step="0.01" min="0.05" max="0.50" value="0.20" />
+                <div style="font-size:.73rem;color:var(--text-muted);margin-top:.3rem">e.g. 0.20 = 20%</div>
+              </div>
+              <div class="form-group"><label>System Cost (MAD)</label><input id="s-cost" type="number" step="1000" min="5000" value="80000" /></div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:.85rem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Calculate Solar ROI
+            </button>
+          </form>
+
+          <div class="formula-box">
+            <strong>// Formulas used</strong><br>
+            P_peak  = roof_area × η_panel × 1 kW/m²<br>
+            E_annual = P_peak × sun_hrs × 365 × 0.80 PR<br>
+            Payback = cost / (E_annual × price/kWh)<br>
+            CO₂    = E_annual × 0.55 kg/kWh (grid factor)
+          </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div>
+          <div id="results" style="display:none;animation:fade-up .5s cubic-bezier(.4,0,.2,1)">
+            <div class="result-grid">
+              <div class="result-chip"><div class="result-chip-label">Peak Power</div><div class="result-chip-value" style="color:#fcd34d" id="res-peak">—</div></div>
+              <div class="result-chip"><div class="result-chip-label">Annual Production</div><div class="result-chip-value" style="color:#6366f1" id="res-energy">—</div></div>
+              <div class="result-chip"><div class="result-chip-label">Annual Savings</div><div class="result-chip-value" style="color:#10b981" id="res-savings">—</div></div>
+              <div class="result-chip"><div class="result-chip-label">Payback Period</div><div class="result-chip-value" style="color:#f97316" id="res-payback">—</div></div>
+              <div class="result-chip"><div class="result-chip-label">20-Year ROI</div><div class="result-chip-value" style="color:#a5b4fc" id="res-roi">—</div></div>
+              <div class="result-chip"><div class="result-chip-label">CO₂ Saved / yr</div><div class="result-chip-value" style="color:#6ee7b7" id="res-co2">—</div></div>
+            </div>
+
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.82rem;color:var(--text-muted)">
+              ☀️ Irradiance used: <span style="color:#fcd34d;font-weight:700" id="res-irr">—</span>
+            </div>
+
+            <div class="card" style="animation:scale-in .5s .2s cubic-bezier(.34,1.56,.64,1) both">
+              <div class="section-title" style="margin-bottom:1rem">20-Year Net Value Projection</div>
+              <div style="height:250px"><canvas id="roiChart"></canvas></div>
+            </div>
+          </div>
+
+          <div id="empty-state">
+            <div class="card" style="min-height:300px">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                <h4>No results yet</h4>
+                <p>Enter your system parameters<br>and click <strong style="color:var(--emerald)">Calculate</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/banners.js"></script>
+<script src="js/solar.js"></script>
+<script>
+  document.getElementById('solar-form').addEventListener('submit', () => {
+    setTimeout(() => { document.getElementById('empty-state').style.display = 'none'; }, 20);
+  });
+</script>
+</body>
+</html>

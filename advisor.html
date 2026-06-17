@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building Advisor · Smart Building</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .adv-hero {
+      background: linear-gradient(135deg, rgba(6,182,212,.06) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 0 0;
+      margin-bottom: 2rem;
+    }
+    .adv-hero-inner { max-width: 680px; }
+    .step-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(6,182,212,.1); border: 1px solid rgba(6,182,212,.25);
+      color: #67e8f9; border-radius: 99px; padding: .3rem .9rem;
+      font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; margin-bottom: 1.25rem;
+    }
+    .map-placeholder {
+      background: rgba(6,182,212,.04);
+      border: 1px dashed rgba(6,182,212,.2);
+      border-radius: 12px; padding: 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      margin-top: 1rem; cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .map-placeholder:hover { border-color: rgba(6,182,212,.5); background: rgba(6,182,212,.08); }
+    .map-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(6,182,212,.12); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-analyze {
+      width: 100%; padding: .95rem; font-size: 1rem;
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      border: none; border-radius: 12px; color: white;
+      font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 20px rgba(6,182,212,.35);
+    }
+    .btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6,182,212,.5); }
+    .btn-analyze:active { transform: translateY(0); }
+
+    /* panel orientation label */
+    .orientation-row { display:flex;gap:1.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap; }
+    .orient-chip {
+      text-align: center;
+      background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.2);
+      border-radius: 12px; padding: .75rem 1.25rem;
+    }
+    .orient-val { font-size:1.4rem;font-weight:900;color:#60a5fa; }
+    .orient-lbl { font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-top:.2rem; }
+
+    /* Energy mix full card */
+    .mix-card {
+      background: rgba(15,23,42,.7); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+      backdrop-filter: blur(20px);
+    }
+    .recommendation-badge {
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.4rem 1rem;border-radius:99px;font-size:.8rem;font-weight:700;
+      margin-bottom:1rem;
+    }
+    .rec-best  { background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#6ee7b7; }
+    .rec-good  { background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:#a5b4fc; }
+    .rec-fair  { background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#fcd34d; }
+    .rec-low   { background:rgba(100,116,139,.12);border:1px solid rgba(100,116,139,.3);color:#94a3b8; }
+  </style>
+</head>
+<body>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="sidebar-logo-text">Smart<span>Building</span></div>
+    </div>
+    <div class="sidebar-section-label">Navigation</div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="thermal.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>Thermal Calculator</a>
+      <a href="solar.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Solar ROI</a>
+      <a href="advisor.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Building Advisor</a>
+      <a href="report.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Energy Report</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-inner">
+        <div class="sidebar-avatar">SB</div>
+        <div><div class="sidebar-user-name">Portfolio Project</div><div class="sidebar-user-role">Energy Analytics</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="topbar-btn menu-btn" id="menu-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <span class="topbar-title">🌍 Building Energy Advisor</span>
+    </header>
+
+    <main class="page-content">
+      <div class="page-banner">
+        <canvas id="page-banner-canvas" data-type="advisor"></canvas>
+        <div class="page-banner-vignette"></div>
+        <div class="page-banner-content">
+          <div class="page-banner-icon" style="color:#06b6d4">🌍</div>
+          <div class="page-banner-title">Building Energy Advisor</div>
+          <div class="page-banner-desc">Geocoding · Climate zones · Optimal energy source analysis</div>
+        </div>
+      </div>
+      <p class="page-subtitle">Enter your building's location and dimensions to get the optimal energy source mix, solar panel orientation, and climate-adapted recommendations.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1.35fr;gap:1.5rem;align-items:start" class="adv-grid">
+
+        <!-- FORM COLUMN -->
+        <div>
+          <!-- Location -->
+          <div class="card reveal" style="margin-bottom:1.25rem">
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem">
+              <div style="width:38px;height:38px;border-radius:10px;background:rgba(6,182,212,.15);display:flex;align-items:center;justify-content:center">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <h3 style="font-size:1rem">Location</h3>
+            </div>
+
+            <div class="form-group">
+              <label>Search City or Address</label>
+              <div class="location-search-wrap">
+                <input id="adv-location" type="text" placeholder="e.g. Casablanca, Morocco" value="" />
+                <button class="location-search-btn" id="geocode-btn" title="Search location">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
+              </div>
+              <div class="location-found" id="location-found">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span id="location-name">—</span>
+                <span style="margin-left:auto;font-size:.72rem;color:var(--text-muted)" id="location-coords">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Building Info -->
+          <div class="card reveal" style="margin-bottom:1.25rem">
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem">
+              <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <h3 style="font-size:1rem">Building Dimensions</h3>
+            </div>
+
+            <div class="form-group">
+              <label>Building Type</label>
+              <select id="adv-type">
+                <option value="residential">🏠 Residential</option>
+                <option value="commercial" selected>🏢 Commercial / Office</option>
+                <option value="industrial">🏭 Industrial / Warehouse</option>
+                <option value="school">🏫 School / University</option>
+                <option value="hospital">🏥 Hospital / Healthcare</option>
+              </select>
+            </div>
+            <div class="grid-3">
+              <div class="form-group"><label>Length (m)</label><input id="adv-length" type="number" value="40" min="1" step="1"/></div>
+              <div class="form-group"><label>Width (m)</label><input id="adv-width" type="number" value="25" min="1" step="1"/></div>
+              <div class="form-group"><label>Floors</label><input id="adv-floors" type="number" value="4" min="1" step="1"/></div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group"><label>Roof Area (m²)</label><input id="adv-roof" type="number" value="800" min="10" step="10"/></div>
+              <div class="form-group"><label>Annual kWh Budget</label><input id="adv-budget" type="number" value="120000" min="1000" step="1000"/></div>
+            </div>
+          </div>
+
+          <button class="btn-analyze" id="analyze-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Analyze Building
+          </button>
+        </div>
+
+        <!-- RESULTS COLUMN -->
+        <div>
+          <!-- Loading -->
+          <div class="advisor-loading" id="adv-loading">
+            <div class="advisor-globe-spin"></div>
+            <div style="font-size:1rem;font-weight:700;margin-bottom:.5rem">Analyzing location…</div>
+            <div style="font-size:.83rem;color:var(--text-muted)">Fetching climate data, solar irradiance &amp; wind resources</div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="adv-empty">
+            <div class="card" style="min-height:400px">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <h4>No analysis yet</h4>
+                <p>Enter your location and building<br>info, then click <strong style="color:#67e8f9">Analyze</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="energy-results" id="adv-results">
+
+            <!-- Climate zone -->
+            <div class="card reveal" style="margin-bottom:1.25rem">
+              <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted);margin-bottom:.75rem">Climate Zone</div>
+              <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+                <div class="climate-badge" id="res-climate-badge">—</div>
+                <div style="flex:1;min-width:160px">
+                  <div id="res-climate-desc" style="font-size:.83rem;color:var(--text-muted);line-height:1.6">—</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 energy cards -->
+            <div class="energy-grid">
+
+              <!-- Solar -->
+              <div class="energy-card energy-card-solar reveal">
+                <div class="energy-card-title">☀️ Solar Potential</div>
+                <div class="sun-anim-wrap" id="sun-wrap">
+                  <div class="sun-rays-wrap" id="sun-rays"></div>
+                  <div class="sun-ring"></div>
+                  <div class="sun-ring"></div>
+                  <div class="sun-ring"></div>
+                  <div class="sun-core"></div>
+                </div>
+                <div class="energy-score" style="color:#fcd34d" id="res-solar-score">—</div>
+                <div class="energy-score-label" id="res-solar-irr">— kWh/m²/day</div>
+                <div class="recommendation-badge" id="res-solar-badge">—</div>
+              </div>
+
+              <!-- Wind -->
+              <div class="energy-card energy-card-wind reveal">
+                <div class="energy-card-title">💨 Wind Potential</div>
+                <div class="wind-anim-wrap" id="wind-wrap"></div>
+                <div class="energy-score" style="color:#60a5fa" id="res-wind-score">—</div>
+                <div class="energy-score-label" id="res-wind-desc">—</div>
+                <div class="recommendation-badge" id="res-wind-badge">—</div>
+              </div>
+
+              <!-- Hydro -->
+              <div class="energy-card energy-card-hydro reveal">
+                <div class="energy-card-title">💧 Hydro Potential</div>
+                <div class="water-anim-wrap" id="water-wrap">
+                  <svg class="water-wave" viewBox="0 0 400 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 40 Q50 10 100 40 Q150 70 200 40 Q250 10 300 40 Q350 70 400 40 Q450 10 500 40 Q550 70 600 40 Q650 10 700 40 Q750 70 800 40 L800 80 L0 80 Z"/>
+                  </svg>
+                  <svg class="water-wave" viewBox="0 0 400 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 50 Q50 20 100 50 Q150 80 200 50 Q250 20 300 50 Q350 80 400 50 Q450 20 500 50 Q550 80 600 50 Q650 20 700 50 Q750 80 800 50 L800 80 L0 80 Z"/>
+                  </svg>
+                </div>
+                <div class="energy-score" style="color:#06b6d4" id="res-hydro-score">—</div>
+                <div class="energy-score-label" id="res-hydro-desc">—</div>
+                <div class="recommendation-badge" id="res-hydro-badge">—</div>
+              </div>
+
+              <!-- Geothermal -->
+              <div class="energy-card energy-card-climate reveal">
+                <div class="energy-card-title">🌋 Geothermal</div>
+                <div style="font-size:3rem;margin:1rem 0" id="res-geo-icon">🌋</div>
+                <div class="energy-score" style="color:#c084fc" id="res-geo-score">—</div>
+                <div class="energy-score-label" id="res-geo-desc">—</div>
+                <div class="recommendation-badge" id="res-geo-badge">—</div>
+              </div>
+
+            </div>
+
+            <!-- Solar Panel Orientation -->
+            <div class="card reveal" style="margin-bottom:1.25rem">
+              <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted);margin-bottom:1rem">☀️ Optimal Solar Panel Orientation</div>
+              <div class="panel-scene">
+                <div class="panel-3d" id="panel-3d"><div class="panel-grid-lines"></div></div>
+                <div class="panel-ground"></div>
+              </div>
+              <div class="orientation-row">
+                <div class="orient-chip">
+                  <div class="orient-val" id="res-tilt">—°</div>
+                  <div class="orient-lbl">Tilt Angle</div>
+                </div>
+                <div class="orient-chip">
+                  <div class="orient-val" id="res-azimuth">—°</div>
+                  <div class="orient-lbl">Azimuth</div>
+                </div>
+                <div class="orient-chip">
+                  <div class="orient-val" id="res-peak-sun">— h</div>
+                  <div class="orient-lbl">Peak Sun Hours</div>
+                </div>
+              </div>
+              <div style="margin-top:1rem;padding:.85rem 1rem;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);border-radius:10px;font-size:.82rem;color:var(--text-muted);line-height:1.7" id="res-orient-note">—</div>
+            </div>
+
+            <!-- Energy Mix -->
+            <div class="mix-card reveal">
+              <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted);margin-bottom:1.25rem">Recommended Energy Mix</div>
+              <div id="mix-bars"></div>
+              <div style="margin-top:1.25rem;padding:1rem;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:12px;font-size:.83rem;color:var(--text-muted);line-height:1.75" id="res-recommendation">—</div>
+            </div>
+
+          </div><!-- /energy-results -->
+        </div>
+      </div><!-- /grid -->
+
+    </main>
+  </div>
+</div>
+
+<style>
+  @media(max-width:960px){ .adv-grid{ grid-template-columns:1fr !important; } }
+</style>
+
+<script src="js/main.js"></script>
+<script src="js/banners.js"></script>
+<script src="js/advisor.js"></script>
+</body>
+</html>
