@@ -251,6 +251,100 @@ function updateTable(zones) {
   `).join('');
 }
 
+/* ── Energy Source Mix (donut) ──────────────────────────────────────────────── */
+let sourceMixChart;
+function drawSourceMix() {
+  const ctx = document.getElementById('sourceMixChart')?.getContext('2d');
+  if (!ctx) return;
+  if (sourceMixChart) sourceMixChart.destroy();
+
+  /* simulate a daylight-driven mix: more solar midday */
+  const h = new Date().getHours();
+  const solar = Math.round(Math.max(8, sinWave(h, 32, 22, 13)));
+  const wind  = Math.round(rand(10, 20));
+  const grid  = Math.max(5, 100 - solar - wind);
+
+  const pct = document.getElementById('renewable-pct');
+  if (pct) pct.textContent = (solar + wind) + '%';
+
+  sourceMixChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Solar', 'Grid', 'Wind'],
+      datasets: [{
+        data: [solar, grid, wind],
+        backgroundColor: ['#6366f1', '#1e293b', '#06b6d4'],
+        borderColor: 'rgba(3,7,18,.9)', borderWidth: 3,
+        hoverOffset: 6,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '72%',
+      plugins: {
+        legend: { position: 'bottom', labels: { color: tickCol, usePointStyle: true, pointStyleWidth: 8, padding: 14, font: { size: 11 } } },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,.95)', borderColor: 'rgba(99,102,241,.3)', borderWidth: 1,
+          titleColor: '#94a3b8', bodyColor: '#f1f5f9', padding: 10,
+          callbacks: { label: c => ` ${c.label}: ${c.parsed}%` },
+        },
+      },
+    },
+  });
+}
+
+/* ── Efficiency Gauge (semi-circle) ─────────────────────────────────────────── */
+let efficiencyGauge;
+function drawEfficiencyGauge() {
+  const ctx = document.getElementById('efficiencyGauge')?.getContext('2d');
+  if (!ctx) return;
+  if (efficiencyGauge) efficiencyGauge.destroy();
+
+  const score = Math.round(rand(88, 96));
+  const grade = score >= 95 ? 'A+' : score >= 90 ? 'A' : score >= 85 ? 'A-' : 'B+';
+  const gEl = document.getElementById('eff-grade'); if (gEl) gEl.textContent = grade;
+  const pEl = document.getElementById('eff-pct');   if (pEl) pEl.textContent = score + '%';
+
+  efficiencyGauge = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [score, 100 - score],
+        backgroundColor: ['#10b981', 'rgba(148,163,184,.08)'],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '78%', rotation: -90, circumference: 180,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+    },
+  });
+}
+
+/* ── Recent Activity feed ───────────────────────────────────────────────────── */
+const ACTIVITY_POOL = [
+  { icon: '🔧', bg: 'rgba(99,102,241,.15)',  title: 'HVAC optimized — Floor 3',        ago: 2 },
+  { icon: '☀️', bg: 'rgba(245,158,11,.15)',  title: 'Peak solar output detected',       ago: 6 },
+  { icon: '⚠️', bg: 'rgba(244,63,94,.15)',   title: 'Sensor offline — Room 402',        ago: 14 },
+  { icon: '💡', bg: 'rgba(16,185,129,.15)',  title: 'Lighting auto-dimmed — Lobby',     ago: 21 },
+  { icon: '🌡️', bg: 'rgba(6,182,212,.15)',  title: 'Setpoint adjusted — Server Room',  ago: 33 },
+  { icon: '🔋', bg: 'rgba(168,85,247,.15)',  title: 'Battery storage charging',         ago: 47 },
+];
+function updateActivity() {
+  const feed = document.getElementById('activity-feed');
+  if (!feed) return;
+  const items = ACTIVITY_POOL.slice(0, 5);
+  feed.innerHTML = items.map((a, i) => `
+    <div class="activity-item" style="animation:fade-up .4s ${i*.06}s cubic-bezier(.4,0,.2,1) both">
+      <div class="activity-dot" style="background:${a.bg}">${a.icon}</div>
+      <div>
+        <div class="activity-title">${a.title}</div>
+        <div class="activity-time">${a.ago} min ago</div>
+      </div>
+    </div>
+  `).join('');
+}
+
 /* ── Main refresh ─────────────────────────────────────────────────────────── */
 function refresh() {
   const zones  = makeZones();
@@ -261,6 +355,9 @@ function refresh() {
   drawHourly(hourly);
   drawWeekly(weekly);
   drawZoneChart(zones);
+  drawSourceMix();
+  drawEfficiencyGauge();
+  updateActivity();
   const el = document.getElementById('last-updated');
   if (el) el.textContent = 'Updated ' + new Date().toLocaleTimeString();
 }
