@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ⚠️ After deploying the Worker (see chatbot/README.md), paste its URL here: */
-const WORKER_URL = "https://smart-building-chatbot.YOUR-SUBDOMAIN.workers.dev";
+const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
 
 (function () {
   if (window.__buildingAssistantLoaded) return;
