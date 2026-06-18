@@ -1,0 +1,7 @@
+name = "smart-building-chatbot"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# The ANTHROPIC_API_KEY is NOT stored here — it is set as an encrypted secret:
+#   wrangler secret put ANTHROPIC_API_KEY
+# Never commit the key to the repo.
