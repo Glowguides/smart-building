@@ -1,3 +1,6 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Cloudflare Wrangler local cache
+chatbot/.wrangler/
