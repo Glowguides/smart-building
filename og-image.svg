@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#030712"/>
+      <stop offset="1" stop-color="#0a1226"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.8" cy="0.2" r="0.8">
+      <stop offset="0" stop-color="#6366f1" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- logo tile -->
+  <rect x="80" y="90" width="120" height="120" rx="28" fill="url(#brand)"/>
+  <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(80,90) scale(1.875)">
+    <path d="M16 30 L32 17 L48 30 V46 a2 2 0 0 1-2 2 H18 a2 2 0 0 1-2-2 Z"/>
+    <path d="M28 48 V37 h8 v11"/>
+  </g>
+  <circle cx="200" cy="114" r="5" fill="#fff" transform="translate(-60,-15)"/>
+
+  <text x="230" y="150" font-family="Inter, sans-serif" font-size="34" font-weight="700" fill="#94a3b8">SMART BUILDING</text>
+  <text x="230" y="195" font-family="JetBrains Mono, monospace" font-size="20" letter-spacing="4" fill="#475569">ENERGY ANALYTICS PLATFORM</text>
+
+  <text x="80" y="330" font-family="Inter, sans-serif" font-size="76" font-weight="900" fill="#f1f5f9">Analyze. Optimize.</text>
+  <text x="80" y="420" font-family="Inter, sans-serif" font-size="76" font-weight="900" fill="url(#brand)">Power smarter buildings.</text>
+
+  <text x="80" y="495" font-family="Inter, sans-serif" font-size="28" fill="#64748b">Live dashboards · Solar ROI · Thermal load · AI energy advisor</text>
+
+  <!-- chips -->
+  <g font-family="Inter, sans-serif" font-size="22" font-weight="600">
+    <rect x="80" y="535" width="170" height="48" rx="24" fill="rgba(99,102,241,.15)" stroke="rgba(99,102,241,.3)"/>
+    <text x="165" y="566" fill="#a5b4fc" text-anchor="middle">☀️ Solar ROI</text>
+    <rect x="266" y="535" width="200" height="48" rx="24" fill="rgba(6,182,212,.15)" stroke="rgba(6,182,212,.3)"/>
+    <text x="366" y="566" fill="#67e8f9" text-anchor="middle">🌍 Energy Advisor</text>
+    <rect x="482" y="535" width="210" height="48" rx="24" fill="rgba(16,185,129,.15)" stroke="rgba(16,185,129,.3)"/>
+    <text x="587" y="566" fill="#6ee7b7" text-anchor="middle">⚡ Live Dashboard</text>
+  </g>
+</svg>

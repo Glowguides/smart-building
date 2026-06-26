@@ -96,13 +96,13 @@ function getGeothermal(lat) {
   return { score, label, cls, desc };
 }
 
-function getOptimalOrientation(lat) {
+function getOptimalOrientation(lat, irradianceOverride) {
   const absLat  = Math.abs(lat);
   const isNorth = lat >= 0;
   const tilt    = Math.round(absLat * 0.87 + 3);     /* Optimized fixed tilt */
   const azimuth = isNorth ? 180 : 0;                 /* Face equator */
   const aziLabel= isNorth ? '180° South' : '0° North';
-  const peakSun = getSolarIrradiance(lat);
+  const peakSun = irradianceOverride != null ? irradianceOverride : getSolarIrradiance(lat);
   const note = isNorth
     ? `Face panels due South (${aziLabel}) and tilt ${tilt}° from horizontal. In summer, reduce tilt by ~15° for optimal yield. In winter, increase tilt by ~15°.`
     : `Face panels due North (${aziLabel}) and tilt ${tilt}° from horizontal. Seasonal adjustment: +15° in winter, −15° in summer.`;
@@ -233,25 +233,60 @@ async function geocode(query) {
   }
 }
 
+/* ── Real solar/climate data via Open-Meteo (free, no API key) ───────────────
+   Pulls the last 12 months of daily shortwave radiation + mean temperature for
+   the exact coordinates and averages them. Falls back to latitude rules on any
+   error so the advisor always returns a result. ─────────────────────────────── */
+async function fetchSolarData(lat, lon) {
+  try {
+    const end   = new Date();
+    const start = new Date(); start.setFullYear(start.getFullYear() - 1);
+    const fmt   = d => d.toISOString().slice(0, 10);
+    const url =
+      `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}` +
+      `&start_date=${fmt(start)}&end_date=${fmt(end)}` +
+      `&daily=shortwave_radiation_sum,temperature_2m_mean&timezone=auto`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('http ' + res.status);
+    const data = await res.json();
+    const rad  = (data.daily?.shortwave_radiation_sum || []).filter(v => v != null);
+    const temp = (data.daily?.temperature_2m_mean     || []).filter(v => v != null);
+    if (!rad.length) throw new Error('no radiation data');
+    const avgMJ      = rad.reduce((s, v) => s + v, 0) / rad.length;   // MJ/m²/day
+    const irradiance = +(avgMJ / 3.6).toFixed(2);                    // → kWh/m²/day
+    const meanTemp   = temp.length ? +(temp.reduce((s, v) => s + v, 0) / temp.length).toFixed(1) : null;
+    return { irradiance, meanTemp, isReal: true };
+  } catch (e) {
+    return { irradiance: null, meanTemp: null, isReal: false };
+  }
+}
+
 /* ── Render results ──────────────────────────────────────────────────────── */
-function showResults(loc) {
+async function showResults(loc) {
   const { lat, lon } = loc;
 
+  /* Try real data first, fall back to latitude rules */
+  const real       = await fetchSolarData(lat, lon);
+  const irradiance  = real.isReal ? real.irradiance : getSolarIrradiance(lat);
+
   const climate = getClimateZone(lat, lon);
-  const solar   = { score: Math.round(getSolarIrradiance(lat) / 6.1 * 100), irr: getSolarIrradiance(lat) };
+  const solar   = { score: Math.round(Math.min(100, irradiance / 6.5 * 100)), irr: irradiance };
   const wind    = getWindPotential(lat, lon);
   const hydro   = getHydroPotential(lat);
   const geo     = getGeothermal(lat);
-  const orient  = getOptimalOrientation(lat);
+  const orient  = getOptimalOrientation(lat, irradiance);
   const mix     = computeEnergyMix(solar, wind, hydro, geo, climate);
 
-  /* Climate */
+  /* Climate (enriched with real annual mean temp when available) */
   document.getElementById('res-climate-badge').textContent = `${climate.emoji} ${climate.zone}`;
-  document.getElementById('res-climate-desc').textContent  = climate.desc;
+  let cdesc = climate.desc;
+  if (real.meanTemp != null) cdesc += ` Annual mean temperature ≈ ${real.meanTemp}°C (live data).`;
+  document.getElementById('res-climate-desc').textContent  = cdesc;
 
   /* Solar */
   document.getElementById('res-solar-score').textContent = solar.score + '/100';
-  document.getElementById('res-solar-irr').textContent   = solar.irr.toFixed(1) + ' kWh/m²/day avg irradiance';
+  const srcTag = real.isReal ? ' · live · Open-Meteo' : ' · estimated';
+  document.getElementById('res-solar-irr').textContent   = solar.irr.toFixed(1) + ' kWh/m²/day avg irradiance' + srcTag;
   const solarCls = solar.score >= 80 ? 'rec-best' : solar.score >= 60 ? 'rec-good' : solar.score >= 40 ? 'rec-fair' : 'rec-low';
   const solarLbl = solar.score >= 80 ? 'Excellent' : solar.score >= 60 ? 'Good' : solar.score >= 40 ? 'Moderate' : 'Low';
   renderScoreBadge(document.getElementById('res-solar-badge'), solarCls, solarLbl);

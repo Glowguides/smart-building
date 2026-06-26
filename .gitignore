@@ -4,3 +4,6 @@ Thumbs.db
 
 # Cloudflare Wrangler local cache
 chatbot/.wrangler/
+node_modules/
+package.json
+package-lock.json
