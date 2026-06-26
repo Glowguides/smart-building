@@ -1,55 +1,46 @@
-# Building Assistant — Claude chatbot proxy
+# Building Assistant — chatbot proxy (Google Gemini, free tier)
 
-A tiny Cloudflare Worker that powers the in-site chatbot. It holds your Anthropic
-API key as an **encrypted secret** (never in the repo, never in the browser),
-and runs a tool-use loop so Claude can actually run the site's calculators.
+A tiny Cloudflare Worker that powers the in-site chatbot. It holds your **Gemini
+API key** as an encrypted secret (never in the repo, never in the browser), and
+runs a function-calling loop so the model can actually run the site's calculators.
 
 ```
-Browser (GitHub Pages)  →  this Worker (holds API key)  →  Claude API
+Browser (GitHub Pages)  →  this Worker (holds Gemini key)  →  Gemini API (free)
 ```
 
 ## One-time setup
 
-### 1. Get an Anthropic API key
-- Go to <https://console.anthropic.com> → sign in → **API Keys** → *Create Key*.
-- Add a payment method under **Billing** (usage is pay-as-you-go; a chatbot like
-  this costs roughly a fraction of a cent per message on `claude-opus-4-8`).
-- Copy the key (starts with `sk-ant-...`). You'll paste it in step 4 — it is
-  never committed anywhere.
+### 1. Get a FREE Gemini API key (no credit card)
+- Go to <https://aistudio.google.com> → sign in with a Google account
+- Click **"Get API key"** → **Create API key** → copy it
+- That's it — the free tier needs no billing. (Don't send sensitive data through
+  the free tier; Google may use prompts to improve their models.)
 
-### 2. Install Wrangler (Cloudflare's CLI)
+### 2. Install Wrangler (Cloudflare's CLI) — if not already
 ```bash
 npm install -g wrangler
 wrangler login          # opens a browser to authorize your free Cloudflare account
 ```
 
-### 3. Deploy the Worker
+### 3. Set the key as a secret
 ```bash
 cd chatbot
+wrangler secret put GEMINI_API_KEY
+# paste your Gemini key when prompted, press Enter
+```
+
+### 4. (Re)deploy the Worker
+```bash
 wrangler deploy
 ```
-Wrangler prints a URL like:
-`https://smart-building-chatbot.<your-subdomain>.workers.dev`
-Copy it.
-
-### 4. Set the API key as a secret
-```bash
-wrangler secret put ANTHROPIC_API_KEY
-# paste your sk-ant-... key when prompted, press Enter
-```
-
-### 5. Point the website at your Worker
-Open `js/chatbot.js` and set:
-```js
-const WORKER_URL = "https://smart-building-chatbot.<your-subdomain>.workers.dev";
-```
-Commit and push. Done — the chat bubble appears on every page.
+The Worker URL (`https://smart-building-chatbot.<subdomain>.workers.dev`) is
+already wired into `js/chatbot.js`. Once the secret is set and deployed, the
+chatbot answers live — just hard-refresh the site.
 
 ## Notes
-- **CORS** is locked in `worker.js` (`ALLOWED_ORIGINS`). It already allows
-  `https://glowguides.github.io` and localhost. Add your custom domain there if
-  you use one, then `wrangler deploy` again.
-- **Model**: `claude-opus-4-8` (set near the top of `worker.js`). To cut
-  cost/latency, change it to `claude-haiku-4-5`.
-- **Free tier**: Cloudflare Workers includes 100,000 requests/day free.
-- The key can be rotated anytime: re-run `wrangler secret put ANTHROPIC_API_KEY`.
+- **Model**: `gemini-2.5-flash` (free-tier; set near the top of `worker.js`).
+- **CORS** is locked in `worker.js` (`ALLOWED_ORIGINS`) — already allows
+  `glowguides.github.io` and localhost. Add a custom domain there if you use one.
+- **Free-tier limits**: ~15 requests/min and a generous daily quota — far more
+  than a portfolio demo needs.
+- Rotate the key anytime: re-run `wrangler secret put GEMINI_API_KEY`.
