@@ -99,8 +99,8 @@ const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
     <div class="ba-head">
       <div class="ba-head-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></div>
       <div>
-        <div class="ba-head-title">Building Assistant</div>
-        <div class="ba-head-sub">Powered by Claude</div>
+        <div class="ba-head-title">Watt · Building Assistant</div>
+        <div class="ba-head-sub">AI energy sidekick</div>
       </div>
       <button class="ba-close" title="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
@@ -212,7 +212,7 @@ const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
     panel.classList.toggle("open");
     if (panel.classList.contains("open") && !opened) {
       opened = true;
-      addMsg("bot", "Hi! I'm your Building Assistant 🏢⚡\nI can run solar & thermal calculations, recommend the best energy source for any location, read the live dashboard, and point you around the app. Try one of these:");
+      addMsg("bot", "Hey, I'm Watt ⚡ — your building energy sidekick.\nI run real solar & thermal calcs, find the best energy source for any spot on Earth, read the live dashboard, and generally know my stuff (memes included). Throw me something:");
       addChips();
       setTimeout(() => input.focus(), 300);
     } else if (panel.classList.contains("open")) {
