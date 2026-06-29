@@ -42,5 +42,5 @@ chatbot answers live — just hard-refresh the site.
 - **CORS** is locked in `worker.js` (`ALLOWED_ORIGINS`) — already allows
   `glowguides.github.io` and localhost. Add a custom domain there if you use one.
 - **Free-tier limits**: ~15 requests/min and a generous daily quota — far more
-  than a portfolio demo needs.
+  than this app needs.
 - Rotate the key anytime: re-run `wrangler secret put GEMINI_API_KEY`.

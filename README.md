@@ -1,6 +1,6 @@
 # Smart Building Platform
 
-A static portfolio website for smart building energy analysis — no backend, no build step, pure HTML/CSS/JavaScript.
+A static website for smart building energy analysis — no backend, no build step, pure HTML/CSS/JavaScript.
 
 **Live demo:** deploy to GitHub Pages in 30 seconds (see below).
 
