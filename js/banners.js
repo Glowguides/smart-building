@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
    DASHBOARD — Sensor network: glowing nodes + live data-flow particles
    ───────────────────────────────────────────────────────────────────────── */
 function animDashboard(ctx, dim) {
-  const ZONE_COLORS = ['#6366f1','#06b6d4','#10b981','#a855f7','#f97316'];
+  const ZONE_COLORS = ['#FF6D00','#00B4D8','#10b981','#FF6B8A','#f97316'];
   let nodes = [], t = 0;
 
   function init() {
@@ -80,7 +80,7 @@ function animDashboard(ctx, dim) {
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
           ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.strokeStyle = `rgba(99,102,241,${a})`;
+          ctx.strokeStyle = `rgba(255,109,0,${a})`;
           ctx.lineWidth = .8;
           ctx.stroke();
         }
@@ -319,10 +319,10 @@ function animAdvisor(ctx, dim) {
   let t = 0;
 
   const PINS = [
-    { lx: .2,  ly: .45, color: '#06b6d4' },
-    { lx: .45, ly: .35, color: '#6366f1' },
+    { lx: .2,  ly: .45, color: '#00B4D8' },
+    { lx: .45, ly: .35, color: '#FF6D00' },
     { lx: .65, ly: .55, color: '#10b981' },
-    { lx: .78, ly: .3,  color: '#a855f7' },
+    { lx: .78, ly: .3,  color: '#FF6B8A' },
     { lx: .55, ly: .65, color: '#f97316' },
   ];
   PINS.forEach(p => { p.ripple = Math.random() * Math.PI * 2; p.rippleR = Math.random() * .5; });
@@ -349,7 +349,7 @@ function animAdvisor(ctx, dim) {
       for (let x = 0; x <= W; x += 4) {
         ctx.lineTo(x, y + Math.sin(x * .018 + t * .5 + i) * 5 + wave);
       }
-      ctx.strokeStyle = 'rgba(6,182,212,.10)';
+      ctx.strokeStyle = 'rgba(0,180,216,.10)';
       ctx.lineWidth   = 1;
       ctx.stroke();
     }
@@ -365,7 +365,7 @@ function animAdvisor(ctx, dim) {
           const xOff = Math.sin(y * .02 + t * .4 + i) * 3;
           y === 0 ? ctx.moveTo(x + xOff, y) : ctx.lineTo(x + xOff, y);
         }
-        ctx.strokeStyle = 'rgba(99,102,241,.08)';
+        ctx.strokeStyle = 'rgba(255,109,0,.08)';
         ctx.lineWidth   = 1;
         ctx.stroke();
       }
@@ -387,7 +387,7 @@ function animAdvisor(ctx, dim) {
         ctx.strokeStyle = p.color.replace(')', `,${alpha})`).replace(/^#/, 'rgba(').replace(/(.{2})(.{2})(.{2})/, (_, r, g, b) =>
           `${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)}`);
         /* simpler: just use rgba with fixed color */
-        ctx.strokeStyle = `rgba(99,102,241,${alpha})`;
+        ctx.strokeStyle = `rgba(255,109,0,${alpha})`;
         ctx.lineWidth   = 1.5;
         ctx.stroke();
       }
@@ -427,7 +427,7 @@ function animReport(ctx, dim) {
     { label: 'Solar',    color: '#fcd34d', target: .82 },
     { label: 'Wind',     color: '#60a5fa', target: .61 },
     { label: 'Thermal',  color: '#f97316', target: .74 },
-    { label: 'Hydro',    color: '#06b6d4', target: .48 },
+    { label: 'Hydro',    color: '#00B4D8', target: .48 },
     { label: 'Savings',  color: '#10b981', target: .91 },
   ];
   BARS.forEach(b => b.current = 0);
@@ -436,7 +436,7 @@ function animReport(ctx, dim) {
   const streams = Array.from({ length: 25 }, () => ({
     x: 0, y: 0, speed: 0, len: 0, alpha: 0, color: '',
   }));
-  const streamColors = ['#6366f1','#a855f7','#06b6d4'];
+  const streamColors = ['#FF6D00','#FF6B8A','#00B4D8'];
 
   function spawnStream(s, W, H) {
     s.x     = -80 + Math.random() * W * .3;

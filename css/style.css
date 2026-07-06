@@ -3,7 +3,7 @@
    Dark glassmorphism · Neon accents · Fluid animations
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
 
 /* ── CSS Variables ─────────────────────────────────────────────────────────── */
 :root {
@@ -1304,3 +1304,114 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   body::before, .card::after, .btn-primary, .gradient-text, .gradient-text-warm, .sidebar::after { animation: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ✦ ZOEY-OS STYLE THEME ✦  (faithful clone: black terminal OS, JetBrains Mono,
+   warm-orange glow, subtle white glass, ghost buttons, uppercase mono labels)
+   Overrides the holographic layer above.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --bg: #000000; --bg2: #050506;
+  --indigo: #FF6D00;         /* primary accent (orange) */
+  --cyan:   #00B4D8;         /* tech accent */
+  --violet: #FF6B8A;         /* warm pink */
+  --amber:  #FFD166;         /* gold */
+  --emerald:#10B981; --rose:#EF4444;
+  --gradient:      linear-gradient(135deg, #FF6D00, #FF8C42);
+  --gradient-v:    linear-gradient(180deg, #FF6D00, #FF6B8A);
+  --gradient-warm: linear-gradient(135deg, #FF8C42, #FFD166);
+  --surface:  rgba(255,255,255,.03);
+  --surface2: rgba(255,255,255,.05);
+  --border:       rgba(255,255,255,.06);
+  --border-glow:  rgba(255,140,66,.30);
+  --text:        rgba(255,255,255,.92);
+  --text-muted:  rgba(255,255,255,.45);
+  --text-subtle: rgba(255,255,255,.25);
+  --glow-indigo: 0 0 40px rgba(255,140,66,.18), 0 0 80px rgba(255,140,66,.08);
+  --glow-cyan:   0 0 30px rgba(0,180,216,.30);
+  --radius: 12px; --radius-sm: 8px;
+}
+
+/* Base: pure black, monospace everywhere (the Zoey signature) */
+body {
+  background: #000;
+  color: var(--text);
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, 'Courier New', monospace;
+  letter-spacing: .01em;
+}
+
+/* Warm glow blooms + faint approach grid (kills the rainbow layer) */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -3; pointer-events: none;
+  background:
+    radial-gradient(62% 46% at 50% 0%,  rgba(255,109,0,.12), transparent 72%),
+    radial-gradient(42% 42% at 85% 18%, rgba(0,180,216,.06), transparent 72%),
+    radial-gradient(50% 42% at 12% 92%, rgba(255,107,138,.06), transparent 72%);
+  filter: none; animation: none;
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: .55;
+  mix-blend-mode: normal;
+  background-image:
+    linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask: radial-gradient(ellipse 82% 72% at 50% 38%, #000 18%, transparent 76%);
+          mask: radial-gradient(ellipse 82% 72% at 50% 38%, #000 18%, transparent 76%);
+}
+
+/* Glass cards — Zoey subtle white glass, no rainbow edge */
+.card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); backdrop-filter: blur(12px); }
+.card::after { display: none; }
+.card::before { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 42%); }
+.card:hover {
+  border-color: rgba(255,140,66,.30);
+  box-shadow: 0 8px 30px rgba(0,0,0,.45), 0 0 26px rgba(255,109,0,.08);
+  transform: translateY(-2px);
+}
+
+/* Warm-orange headline text (replace holographic shimmer) */
+.gradient-text {
+  background: linear-gradient(120deg, #FF6D00, #FF8C42 55%, #FFD166);
+  background-size: auto; -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; animation: none;
+}
+.gradient-text-warm {
+  background: linear-gradient(120deg, #FF8C42, #FFD166);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; animation: none;
+}
+
+/* Ghost buttons with orange glow (Zoey's signature CTA) */
+.btn-primary {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  color: #FF6D00;
+  text-shadow: 0 0 8px rgba(255,109,0,.4);
+  text-transform: uppercase; letter-spacing: .08em; font-weight: 700; font-size: .8rem;
+  box-shadow: 0 0 12px rgba(255,109,0,.12);
+  animation: none;
+}
+.btn-primary:hover {
+  background: rgba(255,109,0,.08); border-color: rgba(255,140,66,.4);
+  box-shadow: 0 0 22px rgba(255,109,0,.28); transform: translateY(-1px);
+}
+
+/* Sidebar / topbar — terminal glass with warm top edge */
+.sidebar { background: rgba(5,5,7,.9); border-right: 1px solid rgba(255,255,255,.06); }
+.sidebar::after { background: linear-gradient(90deg, transparent, #FF6D00, transparent); animation: none; opacity: .55; }
+.sidebar-nav a.active { background: rgba(255,109,0,.10); color: #FF8C42; box-shadow: inset 0 0 0 1px rgba(255,140,66,.30); }
+.sidebar-nav a.active::before { background: var(--gradient); }
+.topbar { background: rgba(5,5,7,.7); }
+
+/* Mono/terminal label treatment on small labels */
+.sidebar-section-label, .metric-label, .badge, .page-banner-desc { text-transform: uppercase; letter-spacing: .1em; }
+
+/* Warm badges + accents */
+.badge-indigo { background: rgba(255,109,0,.12); color: #FF8C42; border-color: rgba(255,109,0,.3); }
+.badge-cyan   { background: rgba(0,180,216,.12); color: #7fe3f5; border-color: rgba(0,180,216,.3); }
+
+/* Prismatic scrollbar → warm */
+::-webkit-scrollbar-thumb { background: linear-gradient(#FF6D00, #FF8C42); }
+::-webkit-scrollbar-thumb:hover { background: #FF8C42; }
+::selection { background: rgba(255,140,66,.30); color: #fff; }
