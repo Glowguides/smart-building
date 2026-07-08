@@ -114,8 +114,8 @@ function computeEnergyMix(solar, wind, hydro, geo, climate) {
   const bars = [
     { label: '☀️ Solar PV',       pct: Math.round(solar.score / total * 100), color: 'linear-gradient(90deg,#f59e0b,#fcd34d)', score: solar.score },
     { label: '💨 Wind',            pct: Math.round(wind.score  / total * 100), color: 'linear-gradient(90deg,#3b82f6,#60a5fa)', score: wind.score },
-    { label: '💧 Hydro',           pct: Math.round(hydro.score / total * 100), color: 'linear-gradient(90deg,#00B4D8,#67e8f9)', score: hydro.score },
-    { label: '🌋 Geothermal',      pct: Math.round(geo.score   / total * 100), color: 'linear-gradient(90deg,#FF6B8A,#c084fc)', score: geo.score },
+    { label: '💧 Hydro',           pct: Math.round(hydro.score / total * 100), color: 'linear-gradient(90deg,#06b6d4,#67e8f9)', score: hydro.score },
+    { label: '🌋 Geothermal',      pct: Math.round(geo.score   / total * 100), color: 'linear-gradient(90deg,#a855f7,#c084fc)', score: geo.score },
   ].sort((a,b) => b.pct - a.pct);
 
   /* Normalize to 100% */

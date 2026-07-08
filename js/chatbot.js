@@ -17,12 +17,12 @@ const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
   .ba-fab {
     position: fixed; bottom: 24px; right: 24px; z-index: 9998;
     width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
-    background: linear-gradient(135deg, #FF6D00, #00B4D8);
-    box-shadow: 0 8px 30px rgba(255,109,0,.45); color: #fff;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    box-shadow: 0 8px 30px rgba(99,102,241,.45); color: #fff;
     display: flex; align-items: center; justify-content: center;
     transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s;
   }
-  .ba-fab:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 40px rgba(255,109,0,.6); }
+  .ba-fab:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 40px rgba(99,102,241,.6); }
   .ba-fab svg { width: 26px; height: 26px; }
   .ba-fab .ba-dot { position:absolute; top:12px; right:12px; width:9px; height:9px; border-radius:50%;
     background:#34d399; box-shadow:0 0 8px #34d399; }
@@ -32,7 +32,7 @@ const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
     width: 380px; max-width: calc(100vw - 32px); height: 560px; max-height: calc(100vh - 130px);
     background: rgba(10,15,28,.85); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
     border: 1px solid rgba(148,163,184,.14); border-radius: 18px;
-    box-shadow: 0 24px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(255,109,0,.1);
+    box-shadow: 0 24px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(99,102,241,.1);
     display: flex; flex-direction: column; overflow: hidden;
     opacity: 0; transform: translateY(20px) scale(.97); pointer-events: none;
     transition: opacity .28s, transform .28s cubic-bezier(.34,1.56,.64,1);
@@ -43,7 +43,7 @@ const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
   .ba-head { display:flex; align-items:center; gap:.7rem; padding: 1rem 1.1rem;
     border-bottom: 1px solid rgba(148,163,184,.1); }
   .ba-head-icon { width:36px; height:36px; border-radius:10px; flex-shrink:0;
-    background: linear-gradient(135deg,#FF6D00,#00B4D8); display:flex; align-items:center; justify-content:center; }
+    background: linear-gradient(135deg,#6366f1,#06b6d4); display:flex; align-items:center; justify-content:center; }
   .ba-head-icon svg { width:19px; height:19px; color:#fff; }
   .ba-head-title { font-weight:800; font-size:.95rem; color:#f1f5f9; letter-spacing:-.01em; }
   .ba-head-sub { font-size:.68rem; color:#64748b; font-family:'JetBrains Mono',monospace; }
@@ -53,18 +53,18 @@ const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
 
   .ba-body { flex:1; overflow-y:auto; padding: 1.1rem; display:flex; flex-direction:column; gap:.9rem; }
   .ba-body::-webkit-scrollbar { width:5px; }
-  .ba-body::-webkit-scrollbar-thumb { background:rgba(255,109,0,.4); border-radius:3px; }
+  .ba-body::-webkit-scrollbar-thumb { background:rgba(99,102,241,.4); border-radius:3px; }
 
   .ba-msg { max-width: 85%; padding:.7rem .9rem; border-radius:14px; font-size:.86rem; line-height:1.5; white-space:pre-wrap; word-wrap:break-word; }
-  .ba-msg.user { align-self:flex-end; background:linear-gradient(135deg,#FF6D00,#4f46e5); color:#fff; border-bottom-right-radius:4px; }
+  .ba-msg.user { align-self:flex-end; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; border-bottom-right-radius:4px; }
   .ba-msg.bot  { align-self:flex-start; background:rgba(30,41,59,.7); color:#e2e8f0; border:1px solid rgba(148,163,184,.1); border-bottom-left-radius:4px; }
   .ba-msg.bot a { color:#67e8f9; text-decoration:underline; }
   .ba-msg.err { align-self:flex-start; background:rgba(244,63,94,.12); color:#fda4af; border:1px solid rgba(244,63,94,.2); font-size:.82rem; }
 
   .ba-chips { display:flex; flex-wrap:wrap; gap:.4rem; }
-  .ba-chip { font-size:.74rem; color:#a5b4fc; background:rgba(255,109,0,.1); border:1px solid rgba(255,109,0,.22);
+  .ba-chip { font-size:.74rem; color:#a5b4fc; background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.22);
     border-radius:99px; padding:.35rem .7rem; cursor:pointer; transition:background .15s,border-color .15s; }
-  .ba-chip:hover { background:rgba(255,109,0,.2); border-color:rgba(255,109,0,.5); }
+  .ba-chip:hover { background:rgba(99,102,241,.2); border-color:rgba(99,102,241,.5); }
 
   .ba-typing { align-self:flex-start; display:flex; gap:4px; padding:.8rem .9rem; background:rgba(30,41,59,.7);
     border:1px solid rgba(148,163,184,.1); border-radius:14px; border-bottom-left-radius:4px; }
@@ -75,10 +75,10 @@ const WORKER_URL = "https://smart-building-chatbot.glowguides.workers.dev";
   .ba-foot { padding:.8rem; border-top:1px solid rgba(148,163,184,.1); display:flex; gap:.5rem; }
   .ba-input { flex:1; background:rgba(15,23,42,.8); border:1px solid rgba(148,163,184,.14); border-radius:11px;
     padding:.65rem .85rem; color:#f1f5f9; font-size:.86rem; outline:none; font-family:inherit; resize:none; max-height:90px; }
-  .ba-input:focus { border-color:rgba(255,109,0,.5); }
+  .ba-input:focus { border-color:rgba(99,102,241,.5); }
   .ba-input::placeholder { color:#475569; }
   .ba-send { border:none; border-radius:11px; width:42px; flex-shrink:0; cursor:pointer; color:#fff;
-    background:linear-gradient(135deg,#FF6D00,#00B4D8); display:flex; align-items:center; justify-content:center; transition:opacity .2s; }
+    background:linear-gradient(135deg,#6366f1,#06b6d4); display:flex; align-items:center; justify-content:center; transition:opacity .2s; }
   .ba-send:disabled { opacity:.4; cursor:not-allowed; }
   .ba-send svg { width:18px; height:18px; }
   `;

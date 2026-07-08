@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const ZONES = ['Office A', 'Server Room', 'Lobby', 'Meeting Room', 'Rooftop'];
-const ZONE_COLORS = ['#FF6D00','#00B4D8','#FF6B8A','#10b981','#f59e0b'];
+const ZONE_COLORS = ['#6366f1','#06b6d4','#a855f7','#10b981','#f59e0b'];
 
 function sinWave(h, base, amp, peak = 14) {
   return base + amp * Math.sin(Math.PI * (h - peak + 12) / 12);
@@ -52,8 +52,8 @@ function drawHourly(data) {
   if (hourlyChart) hourlyChart.destroy();
 
   const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-  gradient.addColorStop(0,   'rgba(255,109,0,.35)');
-  gradient.addColorStop(1,   'rgba(255,109,0,0)');
+  gradient.addColorStop(0,   'rgba(99,102,241,.35)');
+  gradient.addColorStop(1,   'rgba(99,102,241,0)');
 
   hourlyChart = new Chart(ctx, {
     type: 'line',
@@ -62,16 +62,16 @@ function drawHourly(data) {
       datasets: [{
         label: 'Energy (kW)',
         data: data.map(d => d.energy_kw),
-        borderColor: '#FF6D00',
+        borderColor: '#6366f1',
         backgroundColor: gradient,
         fill: true, tension: .45,
         pointRadius: 0, pointHoverRadius: 5,
-        pointHoverBackgroundColor: '#FF6D00',
+        pointHoverBackgroundColor: '#6366f1',
         borderWidth: 2.5,
       }, {
         label: 'Temperature (°C)',
         data: data.map(d => d.temperature_c),
-        borderColor: '#00B4D8',
+        borderColor: '#06b6d4',
         backgroundColor: 'transparent',
         tension: .45, pointRadius: 0,
         borderWidth: 2, borderDash: [6, 3],
@@ -85,7 +85,7 @@ function drawHourly(data) {
         legend: { labels: { color: tickCol, usePointStyle: true, pointStyleWidth: 8, padding: 16 } },
         tooltip: {
           backgroundColor: 'rgba(15,23,42,.95)',
-          borderColor: 'rgba(255,109,0,.3)', borderWidth: 1,
+          borderColor: 'rgba(99,102,241,.3)', borderWidth: 1,
           titleColor: '#94a3b8', bodyColor: '#f1f5f9', padding: 12,
           callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}` }
         },
@@ -93,7 +93,7 @@ function drawHourly(data) {
       scales: {
         x:  { ticks: { color: tickCol, maxTicksLimit: 8 }, grid: { color: gridCol } },
         y:  { ticks: { color: tickCol, callback: v => v + ' kW' }, grid: { color: gridCol } },
-        y2: { position: 'right', ticks: { color: '#00B4D8', callback: v => v + '°C' }, grid: { display: false } },
+        y2: { position: 'right', ticks: { color: '#06b6d4', callback: v => v + '°C' }, grid: { display: false } },
       },
     },
   });
@@ -110,9 +110,9 @@ function drawWeekly(data) {
       datasets: [{
         label: 'Energy (kWh)',
         data: data.map(d => d.energy_kwh),
-        backgroundColor: data.map((_, i) => i === data.length - 1 ? '#FF6D00' : 'rgba(255,109,0,.4)'),
+        backgroundColor: data.map((_, i) => i === data.length - 1 ? '#6366f1' : 'rgba(99,102,241,.4)'),
         borderRadius: 8, borderSkipped: false,
-        hoverBackgroundColor: '#FF6D00',
+        hoverBackgroundColor: '#6366f1',
       }],
     },
     options: {
@@ -121,7 +121,7 @@ function drawWeekly(data) {
         legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(15,23,42,.95)',
-          borderColor: 'rgba(255,109,0,.3)', borderWidth: 1,
+          borderColor: 'rgba(99,102,241,.3)', borderWidth: 1,
           titleColor: '#94a3b8', bodyColor: '#f1f5f9', padding: 12,
         },
       },
@@ -160,7 +160,7 @@ function drawZoneChart(zones) {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { labels: { color: tickCol, usePointStyle: true, pointStyleWidth: 8 } },
-        tooltip: { backgroundColor: 'rgba(15,23,42,.95)', borderColor: 'rgba(255,109,0,.3)', borderWidth: 1, titleColor: '#94a3b8', bodyColor: '#f1f5f9', padding: 10 },
+        tooltip: { backgroundColor: 'rgba(15,23,42,.95)', borderColor: 'rgba(99,102,241,.3)', borderWidth: 1, titleColor: '#94a3b8', bodyColor: '#f1f5f9', padding: 10 },
       },
       scales: {
         r: {
@@ -273,7 +273,7 @@ function drawSourceMix() {
       labels: ['Solar', 'Grid', 'Wind'],
       datasets: [{
         data: [solar, grid, wind],
-        backgroundColor: ['#FF6D00', '#1e293b', '#00B4D8'],
+        backgroundColor: ['#6366f1', '#1e293b', '#06b6d4'],
         borderColor: 'rgba(3,7,18,.9)', borderWidth: 3,
         hoverOffset: 6,
       }],
@@ -283,7 +283,7 @@ function drawSourceMix() {
       plugins: {
         legend: { position: 'bottom', labels: { color: tickCol, usePointStyle: true, pointStyleWidth: 8, padding: 14, font: { size: 11 } } },
         tooltip: {
-          backgroundColor: 'rgba(15,23,42,.95)', borderColor: 'rgba(255,109,0,.3)', borderWidth: 1,
+          backgroundColor: 'rgba(15,23,42,.95)', borderColor: 'rgba(99,102,241,.3)', borderWidth: 1,
           titleColor: '#94a3b8', bodyColor: '#f1f5f9', padding: 10,
           callbacks: { label: c => ` ${c.label}: ${c.parsed}%` },
         },
@@ -323,12 +323,12 @@ function drawEfficiencyGauge() {
 
 /* ── Recent Activity feed ───────────────────────────────────────────────────── */
 const ACTIVITY_POOL = [
-  { icon: '🔧', bg: 'rgba(255,109,0,.15)',  title: 'HVAC optimized — Floor 3',        ago: 2 },
+  { icon: '🔧', bg: 'rgba(99,102,241,.15)',  title: 'HVAC optimized — Floor 3',        ago: 2 },
   { icon: '☀️', bg: 'rgba(245,158,11,.15)',  title: 'Peak solar output detected',       ago: 6 },
   { icon: '⚠️', bg: 'rgba(244,63,94,.15)',   title: 'Sensor offline — Room 402',        ago: 14 },
   { icon: '💡', bg: 'rgba(16,185,129,.15)',  title: 'Lighting auto-dimmed — Lobby',     ago: 21 },
-  { icon: '🌡️', bg: 'rgba(0,180,216,.15)',  title: 'Setpoint adjusted — Server Room',  ago: 33 },
-  { icon: '🔋', bg: 'rgba(255,107,138,.15)',  title: 'Battery storage charging',         ago: 47 },
+  { icon: '🌡️', bg: 'rgba(6,182,212,.15)',  title: 'Setpoint adjusted — Server Room',  ago: 33 },
+  { icon: '🔋', bg: 'rgba(168,85,247,.15)',  title: 'Battery storage charging',         ago: 47 },
 ];
 function updateActivity() {
   const feed = document.getElementById('activity-feed');

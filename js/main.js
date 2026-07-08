@@ -100,8 +100,8 @@ function initParticles(canvasId = 'hero-canvas') {
     count:       90,
     maxDist:     140,
     speed:       .4,
-    dotColor:    'rgba(255,109,0,',
-    lineColor:   'rgba(255,109,0,',
+    dotColor:    'rgba(99,102,241,',
+    lineColor:   'rgba(99,102,241,',
     dotSize:     1.8,
   };
 
