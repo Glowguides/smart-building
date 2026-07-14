@@ -3,7 +3,7 @@
    Dark glassmorphism · Neon accents · Fluid animations
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 /* ── CSS Variables ─────────────────────────────────────────────────────────── */
 :root {
@@ -1241,3 +1241,102 @@ input:focus, select:focus, textarea:focus {
 @media (prefers-reduced-motion: reduce) {
   body::before, .gradient-text { animation: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MASTERPIECE LAYER — signature craft on the indigo/cyan identity
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Display typography: Space Grotesk for headlines & big numbers ─────────── */
+:root { --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif; }
+h1, h2, h3,
+.earth-title, .cf-title, .hero h1,
+.stat-num, .earth-stat-val, .metric-value,
+.page-banner-title, .sidebar-logo-text {
+  font-family: var(--font-display);
+}
+.stat-num, .earth-stat-val, .metric-value { font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.earth-title { letter-spacing: -.045em; }
+
+/* ── Film grain: whisper-subtle texture over everything ────────────────────── */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 2000; pointer-events: none;
+  opacity: .028; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Spotlight cards: mouse-tracked glow (set via --mx/--my from JS) ───────── */
+.card { --mx: 50%; --my: 50%; }
+.card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; z-index: 2; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(320px circle at var(--mx) var(--my),
+    rgba(99,102,241,.14), rgba(6,182,212,.06) 45%, transparent 70%);
+}
+.card:hover::after { opacity: 1; }
+/* border catches the light at the pointer too */
+.card:hover {
+  border-color: rgba(148,163,184,.14);
+  box-shadow: 0 12px 44px rgba(0,0,0,.45), 0 0 30px rgba(99,102,241,.12);
+}
+
+/* Coverflow cards get the same treatment */
+.cf-card { --mx: 50%; --my: 50%; }
+.cf-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(260px circle at var(--mx) var(--my),
+    rgba(99,102,241,.16), transparent 65%);
+}
+.cf-card:hover::after { opacity: 1; }
+
+/* ── Scroll progress bar ───────────────────────────────────────────────────── */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+  background: linear-gradient(90deg, #6366f1, #06b6d4, #a855f7);
+  z-index: 3000; pointer-events: none;
+  box-shadow: 0 0 12px rgba(99,102,241,.6);
+  transition: width .08s linear;
+}
+
+/* ── Magnetic buttons: spring transform set by JS ──────────────────────────── */
+[data-magnetic] { transition: transform .3s cubic-bezier(.34,1.56,.64,1); will-change: transform; }
+
+/* ── Cinematic hero: shooting stars + atmosphere glow ──────────────────────── */
+.shooting-star {
+  position: absolute; z-index: 1; pointer-events: none;
+  width: 130px; height: 1.5px; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,.9), rgba(165,180,252,.4), transparent);
+  opacity: 0; transform: rotate(-35deg);
+  animation: star-streak 7s linear infinite;
+}
+.shooting-star:nth-child(1) { top: 12%; left: 62%; animation-delay: 1.2s; }
+.shooting-star:nth-child(2) { top: 24%; left: 18%; animation-delay: 4.1s; animation-duration: 9s; width: 90px; }
+.shooting-star:nth-child(3) { top: 7%;  left: 38%; animation-delay: 6.4s; animation-duration: 8s; }
+@keyframes star-streak {
+  0%, 88%   { opacity: 0; transform: rotate(-35deg) translateX(0); }
+  90%       { opacity: 1; }
+  100%      { opacity: 0; transform: rotate(-35deg) translateX(-340px); }
+}
+.earth-atmosphere {
+  position: absolute; left: 50%; bottom: -8%; transform: translateX(-50%);
+  width: 130%; height: 42%; z-index: 1; pointer-events: none;
+  background: radial-gradient(50% 100% at 50% 100%, rgba(6,182,212,.16), rgba(99,102,241,.07) 55%, transparent 78%);
+  filter: blur(8px);
+}
+
+/* ── Hero title: gradient underline flourish ───────────────────────────────── */
+.earth-title .gradient-text { position: relative; }
+.earth-title .gradient-text::after {
+  content: ""; position: absolute; left: 2%; right: 40%; bottom: -6px; height: 2px;
+  background: linear-gradient(90deg, #6366f1, #06b6d4, transparent);
+  border-radius: 2px; opacity: .7;
+  transform: scaleX(0); transform-origin: left;
+  animation: underline-in 1s .9s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes underline-in { to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .shooting-star, .earth-title .gradient-text::after { animation: none !important; }
+  [data-magnetic] { transition: none; }
+}
+@media (max-width: 768px) { .shooting-star { display: none; } }

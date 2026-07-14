@@ -244,6 +244,45 @@ function initPageTransitions() {
   });
 }
 
+/* ── Spotlight cards: track pointer as CSS vars ──────────────────────────── */
+function initSpotlight() {
+  document.addEventListener('pointermove', e => {
+    const card = e.target.closest?.('.card, .cf-card');
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  }, { passive: true });
+}
+
+/* ── Magnetic buttons: pull gently toward the cursor ─────────────────────── */
+function initMagnetic() {
+  const els = document.querySelectorAll('.earth-btns .btn, .hero-actions .btn, .cf-arrow, .landing-nav .btn');
+  els.forEach(el => {
+    el.setAttribute('data-magnetic', '');
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+      const dy = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+      el.style.transform = `translate(${dx * 5}px, ${dy * 4}px)`;
+    });
+    el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+  });
+}
+
+/* ── Scroll progress bar ─────────────────────────────────────────────────── */
+function initScrollProgress() {
+  const bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.appendChild(bar);
+  const update = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+}
+
 /* ── Boot ────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
@@ -255,4 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initParticles();
   applyChartDefaults();
   initPageTransitions();
+  initSpotlight();
+  initMagnetic();
+  initScrollProgress();
 });
