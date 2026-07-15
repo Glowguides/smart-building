@@ -283,8 +283,64 @@ function initScrollProgress() {
   update();
 }
 
+/* ── Cinematic intro (landing only) ──────────────────────────────────────── */
+function initIntro() {
+  const intro = document.getElementById('intro');
+  if (!intro) return;
+  document.body.style.overflow = 'hidden';
+  const finish = () => {
+    intro.classList.add('done');
+    document.body.style.overflow = '';
+    setTimeout(() => intro.remove(), 900);
+  };
+  setTimeout(finish, 2200);
+  intro.addEventListener('click', finish); // let impatient users skip
+}
+
+/* ── Reactive nav: frost on scroll ───────────────────────────────────────── */
+function initReactiveNav() {
+  const nav = document.querySelector('.landing-nav');
+  if (!nav) return;
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+/* ── Cursor glow (desktop pointer) ───────────────────────────────────────── */
+function initCursorGlow() {
+  if (window.matchMedia('(hover: none)').matches) return;
+  const glow = document.createElement('div');
+  glow.className = 'cursor-glow';
+  document.body.appendChild(glow);
+  let x = innerWidth / 2, y = innerHeight / 2, tx = x, ty = y;
+  addEventListener('pointermove', e => {
+    tx = e.clientX; ty = e.clientY;
+    glow.classList.add('on');
+  }, { passive: true });
+  addEventListener('pointerleave', () => glow.classList.remove('on'));
+  (function follow() {
+    x += (tx - x) * 0.15; y += (ty - y) * 0.15;
+    glow.style.left = x + 'px'; glow.style.top = y + 'px';
+    requestAnimationFrame(follow);
+  })();
+}
+
+/* ── Hero parallax: content drifts up, subtle depth on scroll ────────────── */
+function initHeroParallax() {
+  const content = document.querySelector('.earth-content');
+  if (!content) return;
+  const onScroll = () => {
+    const y = window.scrollY;
+    if (y > innerHeight) return; // only within the hero
+    content.style.transform = `translateY(${y * 0.18}px)`;
+    content.style.opacity = String(Math.max(0, 1 - y / (innerHeight * 0.75)));
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+}
+
 /* ── Boot ────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  initIntro();
   initSidebar();
   markActiveLink();
   initReveal();
@@ -297,4 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSpotlight();
   initMagnetic();
   initScrollProgress();
+  initReactiveNav();
+  initCursorGlow();
+  initHeroParallax();
 });
